@@ -16,3 +16,4 @@ jobs:
     with:
       service: streamelements-service
       version: "${{ github.RUN_NUMBER }}"
+      npm: false
