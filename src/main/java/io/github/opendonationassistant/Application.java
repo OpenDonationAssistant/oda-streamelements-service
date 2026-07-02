@@ -4,8 +4,6 @@ import io.github.opendonationassistant.rabbit.AMQPConfiguration;
 import io.github.opendonationassistant.rabbit.Exchange;
 import io.github.opendonationassistant.rabbit.RabbitClient;
 import io.github.opendonationassistant.streamelements.listener.WidgetChangesEventListener;
-import io.micronaut.cache.infinispan.InfinispanAsyncCache;
-import io.micronaut.cache.infinispan.InfinispanCacheManager;
 import io.micronaut.context.annotation.Factory;
 import io.micronaut.rabbitmq.connect.ChannelInitializer;
 import io.micronaut.rabbitmq.connect.ChannelPool;
@@ -33,10 +31,5 @@ public class Application {
   @Named("commands")
   public RabbitClient commandsFacade(ChannelPool pool, ObjectMapper mapper) {
     return new RabbitClient(pool, mapper, "commands");
-  }
-
-  @Singleton
-  public InfinispanAsyncCache cache(InfinispanCacheManager manager) {
-    return (InfinispanAsyncCache) manager.getCache("streamelements").async();
   }
 }
