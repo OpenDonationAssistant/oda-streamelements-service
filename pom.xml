@@ -22,6 +22,13 @@
     <micronaut.aot.packageName>io.github.opendonationassistant.aot.generated</micronaut.aot.packageName>
     <micronaut.test.resources.enabled>true</micronaut.test.resources.enabled>
     <exec.mainClass>io.github.opendonationassistant.Application</exec.mainClass>
+    <sonar.organization>opendonationassistant</sonar.organization>
+    <sonar.projectKey>OpenDonationAssistant_oda-streamelements-service</sonar.projectKey>
+    <sonar.host.url>https://sonarcloud.io</sonar.host.url>
+    <sonar.java.coveragePlugin>jacoco</sonar.java.coveragePlugin>
+    <sonar.dynamicAnalysis>reuseReports</sonar.dynamicAnalysis>
+    <sonar.jacoco.reportPath>${project.basedir}/target/jacoco.exec</sonar.jacoco.reportPath>
+    <sonar.language>java</sonar.language>
     <oda.version>0.11.219</oda.version>
   </properties>
 
