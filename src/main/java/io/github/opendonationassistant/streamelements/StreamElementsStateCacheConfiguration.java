@@ -18,7 +18,7 @@ public class StreamElementsStateCacheConfiguration {
 
   @Singleton
   @Requires(env = "standalone")
-  public Map<String, String> streamelementsCache(
+  public Map<String, StreamElementsData> streamelementsCache(
     RemoteCacheManager cacheManager
   ) {
     return cacheManager
@@ -35,7 +35,7 @@ public class StreamElementsStateCacheConfiguration {
 
   @Singleton
   @Requires(env = "allinone")
-  public Map<String, String> streamelementsCache() {
+  public Map<String, StreamElementsData> streamelementsCache() {
     return new HashMap<>();
   }
 }

@@ -26,14 +26,3 @@ micronaut:
     event-listener:
       type: fixed
       nThreads: 1
-# infinispan:
-#   client:
-#     hotrod:
-#       server:
-#         host: 10.43.81.28
-#         port: 11222
-#       security:
-#         enabled: true
-#         authentication:
-#           username: admin
-#           password: password
