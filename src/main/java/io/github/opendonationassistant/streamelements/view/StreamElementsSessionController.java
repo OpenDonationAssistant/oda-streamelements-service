@@ -25,7 +25,7 @@ public class StreamElementsSessionController extends BaseController {
     this.repository = repository;
   }
 
-  @Get
+  @Get("/streamelements/session")
   @Secured(SecurityRule.IS_AUTHENTICATED)
   public CompletableFuture<HttpResponse<StreamElementsSessionView>> getSession(
     Authentication auth
