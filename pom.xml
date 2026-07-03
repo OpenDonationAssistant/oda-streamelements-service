@@ -89,6 +89,12 @@
     </dependency>
 
     <dependency>
+      <groupId>io.micronaut.openapi</groupId>
+      <artifactId>micronaut-openapi-annotations</artifactId>
+      <scope>provided</scope>
+    </dependency>
+
+    <dependency>
       <groupId>io.micronaut.problem</groupId>
       <artifactId>micronaut-problem-json</artifactId>
       <scope>compile</scope>
@@ -172,6 +178,13 @@
       <scope>test</scope>
     </dependency>
 
+    <dependency>
+      <groupId>org.instancio</groupId>
+      <artifactId>instancio-junit</artifactId>
+      <version>5.0.1</version>
+      <scope>test</scope>
+    </dependency>
+
   </dependencies>
   <build>
     <plugins>
@@ -252,6 +265,17 @@
                 </exclusion>
               </exclusions>
             </path>
+            <path>
+              <groupId>io.micronaut.openapi</groupId>
+              <artifactId>micronaut-openapi</artifactId>
+              <version>${micronaut.openapi.version}</version>
+              <exclusions>
+                <exclusion>
+                  <groupId>io.micronaut</groupId>
+                  <artifactId>micronaut-inject</artifactId>
+                </exclusion>
+              </exclusions>
+            </path>
           </annotationProcessorPaths>
           <compilerArgs>
             <arg>-Amicronaut.processing.group=io.github.opendonationassistant</arg>
@@ -261,6 +285,58 @@
             <arg>-Xplugin:ErrorProne -Xep:NullAway:ERROR -XepOpt:NullAway:AnnotatedPackages=io.github.opendonationassistant</arg>
           </compilerArgs>
         </configuration>
+      </plugin>
+      <plugin>
+          <groupId>org.graalvm.buildtools</groupId>
+          <artifactId>native-maven-plugin</artifactId>
+          <version>0.11.3</version>
+          <configuration>
+              <buildArgs>
+                  <buildArg>--initialize-at-build-time=io.micronaut.context.ApplicationContextConfigurer$1</buildArg>
+                  <buildArg>-H:+SharedArenaSupport</buildArg>
+              </buildArgs>
+          </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.jacoco</groupId>
+        <artifactId>jacoco-maven-plugin</artifactId>
+        <version>0.8.14</version>
+        <executions>
+          <execution>
+            <id>prepare-agent</id>
+            <goals>
+              <goal>prepare-agent</goal>
+            </goals>
+          </execution>
+          <execution>
+            <id>report</id>
+            <goals>
+              <goal>report</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.openapitools</groupId>
+        <artifactId>openapi-generator-maven-plugin</artifactId>
+        <version>7.2.0</version>
+        <executions>
+          <execution>
+            <phase>package</phase>
+            <goals>
+              <goal>generate</goal>
+            </goals>
+            <configuration>
+              <inputSpec>${project.basedir}/target/classes/META-INF/swagger/oda-streamelements-service-1.0.0.yml</inputSpec>
+              <generatorName>typescript-axios</generatorName>
+              <configurationFile>openapi-config.json</configurationFile>
+              <configOptions>
+                <output>${project.build.directory}/</output>
+                <npmVersion>${project.version}</npmVersion>
+              </configOptions>
+            </configuration>
+          </execution>
+        </executions>
       </plugin>
     </plugins>
   </build>

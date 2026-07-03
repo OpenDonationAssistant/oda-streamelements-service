@@ -9,11 +9,14 @@ import io.micronaut.rabbitmq.connect.ChannelInitializer;
 import io.micronaut.rabbitmq.connect.ChannelPool;
 import io.micronaut.runtime.Micronaut;
 import io.micronaut.serde.ObjectMapper;
+import io.swagger.v3.oas.annotations.OpenAPIDefinition;
+import io.swagger.v3.oas.annotations.info.Info;
 import jakarta.inject.Named;
 import jakarta.inject.Singleton;
 import java.util.ArrayList;
 
 @Factory
+@OpenAPIDefinition(info = @Info(title = "oda-streamelements-service"))
 public class Application {
 
   public static void main(String[] args) {
