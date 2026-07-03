@@ -1,6 +1,5 @@
 package io.github.opendonationassistant.streamelements.view;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import io.github.opendonationassistant.commons.micronaut.BaseController;
 import io.github.opendonationassistant.streamelements.repository.StreamElementsSessionRepository;
 import io.micronaut.http.HttpResponse;
@@ -9,7 +8,6 @@ import io.micronaut.http.annotation.Get;
 import io.micronaut.security.annotation.Secured;
 import io.micronaut.security.authentication.Authentication;
 import io.micronaut.security.rules.SecurityRule;
-import io.micronaut.serde.annotation.Serdeable;
 import jakarta.inject.Inject;
 import java.util.concurrent.CompletableFuture;
 
