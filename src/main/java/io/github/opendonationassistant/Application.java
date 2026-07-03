@@ -20,7 +20,9 @@ import java.util.ArrayList;
 public class Application {
 
   public static void main(String[] args) {
-    Micronaut.build(args).mainClass(Application.class).banner(false).start();
+    Micronaut.build(args)
+      .defaultEnvironments("standalone")
+      .mainClass(Application.class).banner(false).start();
   }
 
   @Singleton
