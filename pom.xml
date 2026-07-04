@@ -71,11 +71,6 @@
       <scope>compile</scope>
     </dependency>
 
-    <dependency>
-      <groupId>io.micronaut.cache</groupId>
-      <artifactId>micronaut-cache-infinispan</artifactId>
-    </dependency>
-
     <!-- Source: https://mvnrepository.com/artifact/org.infinispan/infinispan-client-hotrod-graalvm -->
     <dependency>
         <groupId>org.infinispan</groupId>
