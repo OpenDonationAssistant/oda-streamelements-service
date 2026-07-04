@@ -23,8 +23,8 @@ public class StreamElementsStateCacheConfiguration {
   public Configuration configuration(
     @Value("${infinispan.client.hotrod.server.host}") String host,
     @Value("${infinispan.client.hotrod.server.port}") int port,
-    @Value("${infinispan.client.hotrod.security.username}") String username,
-    @Value("${infinispan.client.hotrod.security.password}") String password
+    @Value("${infinispan.client.hotrod.security.authentication.username}") String username,
+    @Value("${infinispan.client.hotrod.security.authentication.password}") String password
   ) {
     return new ConfigurationBuilder()
       .addServer()
