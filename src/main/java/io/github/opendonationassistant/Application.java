@@ -3,6 +3,7 @@ package io.github.opendonationassistant;
 import io.github.opendonationassistant.rabbit.AMQPConfiguration;
 import io.github.opendonationassistant.rabbit.Exchange;
 import io.github.opendonationassistant.rabbit.RabbitClient;
+import io.github.opendonationassistant.streamelements.listener.EventsListener;
 import io.github.opendonationassistant.streamelements.listener.WidgetChangesEventListener;
 import io.micronaut.context.annotation.Factory;
 import io.micronaut.context.annotation.Value;
@@ -74,6 +75,7 @@ public class Application {
   public ChannelInitializer rabbitConfiguration() {
     var bindings = new ArrayList<Exchange>();
     bindings.add(WidgetChangesEventListener.BINDING);
+    bindings.add(EventsListener.BINDING);
     return new AMQPConfiguration(bindings);
   }
 
