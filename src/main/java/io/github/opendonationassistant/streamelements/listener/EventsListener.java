@@ -14,7 +14,7 @@ import java.util.Map;
 @RabbitListener(executor = "config-listener")
 public class EventsListener {
 
-  public static final String QUEUE_NAME = "streamelements.config";
+  public static final String QUEUE_NAME = "streamelements.events";
   public static final io.github.opendonationassistant.rabbit.Queue QUEUE =
     new io.github.opendonationassistant.rabbit.Queue(QUEUE_NAME);
   public static final Exchange BINDING = Exchange.Exchange(
