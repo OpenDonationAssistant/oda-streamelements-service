@@ -11,7 +11,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
-@RabbitListener(executor = "config-listener")
+@RabbitListener(executor = "event-listener")
 public class WidgetChangesEventListener {
 
   public static final String QUEUE_NAME = "streamelements.config";
