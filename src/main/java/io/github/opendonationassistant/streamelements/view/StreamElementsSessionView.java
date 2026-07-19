@@ -16,7 +16,8 @@ public record StreamElementsSessionView(Channel channel, Session session) {
       return new Session(
         new Data(
           Tip.of(session.data().tipLatest()),
-          Tip.of(session.data().tipGoal())
+          Tip.of(session.data().tipGoal()),
+          Follower.of(session.data().followerLatest())
         )
       );
     }
@@ -25,7 +26,8 @@ public record StreamElementsSessionView(Channel channel, Session session) {
   @Serdeable
   public static record Data(
     @JsonProperty("tip-latest") Tip tipLatest,
-    @JsonProperty("tip-goal") Tip tipGoal
+    @JsonProperty("tip-goal") Tip tipGoal,
+    @JsonProperty("follower-latest") Follower followerLatest
   ) {}
 
   @Serdeable
@@ -34,6 +36,15 @@ public record StreamElementsSessionView(Channel channel, Session session) {
       io.github.opendonationassistant.streamelements.repository.StreamElementsData.Tip tip
     ) {
       return new Tip(tip.name(), tip.amount());
+    }
+  }
+
+  @Serdeable
+  public static record Follower(String name) {
+    public static Follower of(
+      io.github.opendonationassistant.streamelements.repository.StreamElementsData.Follower follower
+    ) {
+      return new Follower(follower.name());
     }
   }
 }

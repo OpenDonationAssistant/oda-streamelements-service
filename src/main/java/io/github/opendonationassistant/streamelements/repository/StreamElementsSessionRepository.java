@@ -36,7 +36,8 @@ public class StreamElementsSessionRepository {
   public StreamElementsSession startSession(String recipientId) {
     var data = new StreamElementsData(
       new StreamElementsData.Tip("", 0L),
-      new StreamElementsData.Tip("", 0L)
+      new StreamElementsData.Tip("", 0L),
+      new StreamElementsData.Follower("")
     );
     sessions.update(recipientId, data);
     return convert(recipientId, data);

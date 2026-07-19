@@ -75,7 +75,7 @@ public class Application {
   public ChannelInitializer rabbitConfiguration() {
     var bindings = new ArrayList<Exchange>();
     bindings.add(WidgetChangesEventListener.BINDING);
-    bindings.add(EventsListener.BINDING);
+    bindings.addAll(EventsListener.BINDING);
     return new AMQPConfiguration(bindings);
   }
 

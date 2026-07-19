@@ -37,6 +37,22 @@ public class StreamElementsSession {
     this.save();
   }
 
+  public CompletableFuture<Void> setFollowLatest(String name) {
+    this.data = data.withFollowerLatest(
+      new StreamElementsData.Follower(name)
+    );
+    this.save();
+    return facade.sendEvent(
+      recipientId,
+      new Event(
+        new Detail(
+          "follower-latest",
+          Payload.empty().withName(name)
+        )
+      )
+    );
+  }
+
   public CompletableFuture<Void> setTipsLatest(
     String name,
     Amount tip,
