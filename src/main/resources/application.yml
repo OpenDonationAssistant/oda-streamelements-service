@@ -26,3 +26,8 @@ micronaut:
     event-listener:
       type: fixed
       nThreads: 1
+endpoints:
+  prometheus:
+    sensitive: false
+  metrics:
+    sensitive: false
