@@ -16,11 +16,9 @@ public class StreamElementsSessionControllerTest {
   @Inject
   StreamElementsSessionController controller;
 
-
   @Test
   public void testGettingNewSession(@Given Authentication auth) {
     var session = controller.getSession(auth).join();
     assertEquals(HttpStatus.OK, session.getStatus());
   }
-  
 }

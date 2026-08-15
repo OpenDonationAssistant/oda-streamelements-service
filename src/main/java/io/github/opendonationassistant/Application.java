@@ -13,6 +13,7 @@ import io.micronaut.runtime.Micronaut;
 import io.micronaut.serde.ObjectMapper;
 import io.swagger.v3.oas.annotations.OpenAPIDefinition;
 import io.swagger.v3.oas.annotations.info.Info;
+import io.swagger.v3.oas.annotations.info.License;
 import jakarta.inject.Named;
 import jakarta.inject.Singleton;
 import java.util.ArrayList;
@@ -23,7 +24,16 @@ import org.infinispan.manager.DefaultCacheManager;
 import org.infinispan.manager.EmbeddedCacheManager;
 
 @Factory
-@OpenAPIDefinition(info = @Info(title = "oda-streamelements-service"))
+@OpenAPIDefinition(
+  info = @Info(
+    title = "oda-streamelements-service",
+    version = "0.2.0",
+    license = @License(
+      name = "AGPL-3.0",
+      url = "https://www.gnu.org/licenses/agpl-3.0.en.html"
+    )
+  )
+)
 public class Application {
 
   public static void main(String[] args) {
