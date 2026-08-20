@@ -1,19 +1,26 @@
-package io.github.opendonationassistant.listener;
+package io.github.opendonationassistant.streamelements.repository;
 
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 
 import io.github.opendonationassistant.events.widget.WidgetChangedEvent;
-import io.github.opendonationassistant.streamelements.listener.WidgetChangesEventListener;
-import io.github.opendonationassistant.streamelements.repository.StreamElementsSession;
-import io.github.opendonationassistant.streamelements.repository.StreamElementsSessionRepository;
+import io.github.opendonationassistant.streamelements.WidgetFacade;
 import io.micronaut.serde.ObjectMapper;
-import java.util.concurrent.CompletableFuture;
+import java.io.IOException;
+import org.instancio.junit.Given;
+import org.instancio.junit.InstancioExtension;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
+import org.junit.jupiter.api.extension.ExtendWith;
 
-class WidgetChangesEventListenerTest {
+@ExtendWith(InstancioExtension.class)
+public class StreamElementsSessionTest {
 
-  String json =
+  StreamElementsDataRepository repository = mock(
+    StreamElementsDataRepository.class
+  );
+  WidgetFacade facade = mock(WidgetFacade.class);
+
+  final String json =
     """
           {
             "type": "updated",
@@ -46,24 +53,24 @@ class WidgetChangesEventListenerTest {
           }
     """;
 
-  @Mock
-  StreamElementsSessionRepository repository = mock(
-    StreamElementsSessionRepository.class
-  );
-
   @Test
-  void handleDonationGoalEvent_shouldApplyWidgetOnSession() throws Exception {
-    StreamElementsSession session = mock(StreamElementsSession.class);
-    when(repository.getSession(any())).thenReturn(
-      CompletableFuture.completedFuture(session)
+  public void testUpdatingDonationGoalState(
+    @Given String recipientId,
+    @Given StreamElementsData data
+  ) throws IOException {
+    StreamElementsSession session = new StreamElementsSession(
+      recipientId,
+      data,
+      repository,
+      facade
     );
+    var expectedData = data.withTipGoal(new StreamElementsData.Tip("", 10L));
 
     WidgetChangedEvent event = ObjectMapper.getDefault()
       .readValue(json, WidgetChangedEvent.class);
-
     if (event != null) {
-      new WidgetChangesEventListener(repository).handle(event);
-      verify(session).apply(event.widget());
+      session.apply(event.widget());
+      verify(repository).update(recipientId, expectedData);
     }
   }
 }

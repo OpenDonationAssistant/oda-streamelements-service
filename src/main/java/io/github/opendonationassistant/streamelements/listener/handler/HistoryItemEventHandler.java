@@ -44,6 +44,7 @@ public class HistoryItemEventHandler
     var message = event.message();
     repository
       .getSession(event.recipientId())
+      .join()
       .setTipsLatest(nickname, amount, Optional.ofNullable(message).orElse(""));
   }
 }

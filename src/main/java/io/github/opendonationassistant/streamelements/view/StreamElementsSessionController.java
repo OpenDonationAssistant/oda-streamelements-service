@@ -32,8 +32,7 @@ public class StreamElementsSessionController extends BaseController {
     if (ownerId.isEmpty()) {
       return CompletableFuture.completedFuture(HttpResponse.notFound());
     }
-    var session = repository.getSession(ownerId.get());
-    session.data();
+    var session = repository.getSession(ownerId.get()).join();
     return CompletableFuture.completedFuture(
       HttpResponse.ok(
         new StreamElementsSessionView(

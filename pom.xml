@@ -78,7 +78,6 @@
         <scope>compile</scope>
     </dependency>
 
-    <!-- Source: https://mvnrepository.com/artifact/org.infinispan/infinispan-client-hotrod-graalvm -->
     <dependency>
         <groupId>org.infinispan</groupId>
         <artifactId>infinispan-client-hotrod-graalvm</artifactId>

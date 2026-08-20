@@ -1,10 +1,13 @@
 package io.github.opendonationassistant.streamelements.repository;
 
 import io.github.opendonationassistant.commons.Amount;
+import io.github.opendonationassistant.events.widget.Widget;
 import io.github.opendonationassistant.streamelements.WidgetFacade;
 import io.github.opendonationassistant.streamelements.WidgetFacade.Detail;
 import io.github.opendonationassistant.streamelements.WidgetFacade.Event;
 import io.github.opendonationassistant.streamelements.WidgetFacade.Payload;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
 public class StreamElementsSession {
@@ -37,19 +40,46 @@ public class StreamElementsSession {
     this.save();
   }
 
+  /** Fills session state from a widget config, same as the widget changes listener. */
+  public void apply(Widget widget) {
+    var config = widget.config();
+    if (config == null) {
+      return;
+    }
+    var properties = config.properties();
+    if (properties == null) {
+      return;
+    }
+    switch (widget.type()) {
+      case "donationgoal" -> applyDonationGoal(widget);
+      default -> {}
+    }
+  }
+
+  private void applyDonationGoal(Widget widget) {
+    widget
+      .config()
+      .getProperty("goal")
+      .map(goal -> (List<Map<String, Object>>) goal.value())
+      .ifPresent(properties -> {
+        properties
+          .stream()
+          .filter(item -> Boolean.TRUE.equals(item.get("default")))
+          .findFirst()
+          .map(item -> (Map<String, Object>) item.get("accumulatedAmount"))
+          .map(amount -> (Integer) amount.get("major"))
+          .ifPresent(amount -> {
+            setDonationgoalState(new Amount(amount, 0, "RUB"));
+          });
+      });
+  }
+
   public CompletableFuture<Void> setFollowLatest(String name) {
-    this.data = data.withFollowerLatest(
-      new StreamElementsData.Follower(name)
-    );
+    this.data = data.withFollowerLatest(new StreamElementsData.Follower(name));
     this.save();
     return facade.sendEvent(
       recipientId,
-      new Event(
-        new Detail(
-          "follower-latest",
-          Payload.empty().withName(name)
-        )
-      )
+      new Event(new Detail("follower-latest", Payload.empty().withName(name)))
     );
   }
 

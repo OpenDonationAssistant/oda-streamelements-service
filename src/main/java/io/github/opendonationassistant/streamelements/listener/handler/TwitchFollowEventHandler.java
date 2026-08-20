@@ -33,6 +33,6 @@ public class TwitchFollowEventHandler
     if (username == null) {
       return;
     }
-    repository.getSession(recipientId).setFollowLatest(username);
+    repository.getSession(recipientId).join().setFollowLatest(username);
   }
 }
