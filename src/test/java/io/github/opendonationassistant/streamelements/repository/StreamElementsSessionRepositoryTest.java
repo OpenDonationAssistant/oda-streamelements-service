@@ -70,9 +70,7 @@ class StreamElementsSessionRepositoryTest {
     @Given int amount
   ) {
     when(client.request(any())).thenReturn(
-      CompletableFuture.completedFuture(
-        List.of(donationGoalWidget(amount, recipientId))
-      )
+      List.of(donationGoalWidget(amount, recipientId))
     );
 
     var session = repository.startSession(recipientId).join();
@@ -87,9 +85,7 @@ class StreamElementsSessionRepositoryTest {
     @Given Integer amount
   ) {
     when(client.request(any())).thenReturn(
-      CompletableFuture.completedFuture(
-        List.of(donationGoalWidget(amount, "anotheruser"))
-      )
+      List.of(donationGoalWidget(amount, "anotheruser"))
     );
 
     var session = repository.startSession(recipientId).join();
@@ -102,18 +98,16 @@ class StreamElementsSessionRepositoryTest {
     @Given String recipientId
   ) {
     when(client.request(any())).thenReturn(
-      CompletableFuture.completedFuture(
-        List.of(
-          new Widget(
-            "widget-id",
-            "payment-alerts",
-            0,
-            "Alerts",
-            true,
-            recipientId,
-            false,
-            new WidgetConfig(List.of())
-          )
+      List.of(
+        new Widget(
+          "widget-id",
+          "payment-alerts",
+          0,
+          "Alerts",
+          true,
+          recipientId,
+          false,
+          new WidgetConfig(List.of())
         )
       )
     );
@@ -125,9 +119,7 @@ class StreamElementsSessionRepositoryTest {
 
   @Test
   void startSession_shouldHandleMissingWidgetConfig(@Given String recipientId) {
-    when(client.request(any())).thenReturn(
-      CompletableFuture.completedFuture(List.of())
-    );
+    when(client.request(any())).thenReturn(List.of());
 
     var session = repository.startSession(recipientId);
 

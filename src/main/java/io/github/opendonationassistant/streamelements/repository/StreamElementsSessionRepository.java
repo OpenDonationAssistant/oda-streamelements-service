@@ -66,8 +66,11 @@ public class StreamElementsSessionRepository {
     String recipientId,
     StreamElementsSession session
   ) {
-    return configClient
-      .request(new WidgetConfigRequest(null, DONATION_GOAL_WIDGET_TYPE))
+    return CompletableFuture.supplyAsync(() ->
+      configClient.request(
+        new WidgetConfigRequest(null, DONATION_GOAL_WIDGET_TYPE)
+      )
+    )
       .thenAccept(widgets -> {
         widgets
           .stream()

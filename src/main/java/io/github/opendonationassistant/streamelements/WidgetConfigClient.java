@@ -6,7 +6,6 @@ import io.micronaut.rabbitmq.annotation.RabbitClient;
 import io.micronaut.rabbitmq.annotation.RabbitProperty;
 import io.micronaut.serde.annotation.Serdeable;
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
 import org.jspecify.annotations.Nullable;
 
 @RabbitClient("rpc")
@@ -15,7 +14,7 @@ public interface WidgetConfigClient {
   String QUEUE_NAME = "widget.config-request";
 
   @Binding(QUEUE_NAME)
-  CompletableFuture<List<Widget>> request(WidgetConfigRequest request);
+  List<Widget> request(WidgetConfigRequest request);
 
   @Serdeable
   record WidgetConfigRequest(
