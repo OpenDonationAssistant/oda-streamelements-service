@@ -54,7 +54,9 @@ public class StreamElementsSessionRepository {
     var data = new StreamElementsData(
       new StreamElementsData.Tip("", 0L),
       new StreamElementsData.Tip("", 0L),
-      new StreamElementsData.Follower("")
+      null,
+      null,
+      null
     );
     sessions.update(recipientId, data);
     return convert(recipientId, data).thenCompose(session ->

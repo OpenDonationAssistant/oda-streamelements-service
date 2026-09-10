@@ -8,6 +8,7 @@ import io.github.opendonationassistant.streamelements.WidgetFacade.Event;
 import io.github.opendonationassistant.streamelements.WidgetFacade.Payload;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
 public class StreamElementsSession {
@@ -80,6 +81,42 @@ public class StreamElementsSession {
     return facade.sendEvent(
       recipientId,
       new Event(new Detail("follower-latest", Payload.empty().withName(name)))
+    );
+  }
+
+  public CompletableFuture<Void> setSubscriberLatest(
+    StreamElementsData.Subscriber subscriber
+  ) {
+    this.data = data.withSubscriberLatest(subscriber);
+    this.save();
+    return facade.sendEvent(
+      recipientId,
+      new Event(
+        new Detail(
+          "subscriber-latest",
+          Payload.empty()
+            .withName(subscriber.name())
+            .withMessage(Optional.ofNullable(subscriber.message()).orElse(""))
+        )
+      )
+    );
+  }
+
+  public CompletableFuture<Void> setRaidLatest(StreamElementsData.Raid raid) {
+    this.data = data.withRaidLatest(raid);
+    this.save();
+    return facade.sendEvent(
+      recipientId,
+      new Event(
+        new Detail(
+          "raid-latest",
+          Payload.empty()
+            .withName(raid.name())
+            .withAmount(
+              Optional.ofNullable(raid.viewerCount()).map(Integer::longValue).orElse(0L)
+            )
+        )
+      )
     );
   }
 

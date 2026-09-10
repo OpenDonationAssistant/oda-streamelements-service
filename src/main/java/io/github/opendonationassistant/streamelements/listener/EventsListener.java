@@ -25,7 +25,14 @@ public class EventsListener {
     ),
     Exchange.Exchange(
       "twitch",
-      Map.of("event.TwitchChannelFollowEvent", EventsListener.QUEUE)
+      Map.of(
+        "event.TwitchChannelFollowEvent",
+        EventsListener.QUEUE,
+        "event.TwitchChannelSubscriptionMessageEvent",
+        EventsListener.QUEUE,
+        "event.TwitchChannelRaidEvent",
+        EventsListener.QUEUE
+      )
     )
   );
   private final StreamElementsSessionRepository repository;

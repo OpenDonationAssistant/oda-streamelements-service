@@ -37,7 +37,7 @@ public class StreamElementsSessionController extends BaseController {
       HttpResponse.ok(
         new StreamElementsSessionView(
           new StreamElementsSessionView.Channel(ownerId.get()),
-          StreamElementsSessionView.Session.of(session)
+          StreamElementsSessionView.ViewSession.of(session)
         )
       )
     );
