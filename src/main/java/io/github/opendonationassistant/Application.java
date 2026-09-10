@@ -27,7 +27,7 @@ import org.infinispan.manager.EmbeddedCacheManager;
 @OpenAPIDefinition(
   info = @Info(
     title = "oda-streamelements-service",
-    version = "0.2.0",
+    version = "0.3.0",
     license = @License(
       name = "AGPL-3.0",
       url = "https://www.gnu.org/licenses/agpl-3.0.en.html"
