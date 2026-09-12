@@ -52,6 +52,11 @@
       <artifactId>oda-rabbit-conf</artifactId>
       <version>${oda.version}</version>
     </dependency>
+    <dependency>
+      <groupId>io.github.opendonationassistant</groupId>
+      <artifactId>oda-test-utils</artifactId>
+      <version>${oda.version}</version>
+    </dependency>
 
     <dependency>
       <groupId>io.micronaut</groupId>

@@ -21,8 +21,12 @@ public record StreamElementsSessionView(Channel channel, ViewSession session) {
     ) {
       return new ViewSession(
         new ViewData(
-          ViewTip.of(session.data().tipLatest()),
-          ViewTip.of(session.data().tipGoal()),
+          Optional.ofNullable(ViewTip.of(session.data().tipLatest())).orElseGet(
+            () -> new ViewTip("", 0L)
+          ),
+          Optional.ofNullable(ViewTip.of(session.data().tipGoal())).orElseGet(
+            () -> new ViewTip("", 0L)
+          ),
           ViewFollower.of(session.data().followerLatest()),
           ViewSubscriber.of(session.data().subscriberLatest()),
           ViewRaid.of(session.data().raidLatest())
@@ -45,7 +49,9 @@ public record StreamElementsSessionView(Channel channel, ViewSession session) {
   @Serdeable
   public static record ViewTip(String name, Long amount) {
     public static @Nullable ViewTip of(@Nullable Tip tip) {
-      return new ViewTip(tip.name(), tip.amount());
+      return Optional.ofNullable(tip)
+        .map(it -> new ViewTip(it.name(), it.amount()))
+        .orElse(null);
     }
   }
 
