@@ -65,7 +65,12 @@ public class StreamElementsSession {
       .ifPresent(properties -> {
         properties
           .stream()
-          .filter(item -> Boolean.TRUE.equals(item.get("default")))
+          .filter(item ->
+            Optional.ofNullable(item.get("mode"))
+              .map(String::valueOf)
+              .filter("default"::equalsIgnoreCase)
+              .isPresent()
+          )
           .findFirst()
           .map(item -> (Map<String, Object>) item.get("accumulatedAmount"))
           .map(amount -> (Integer) amount.get("major"))
@@ -113,7 +118,9 @@ public class StreamElementsSession {
           Payload.empty()
             .withName(raid.name())
             .withAmount(
-              Optional.ofNullable(raid.viewerCount()).map(Integer::longValue).orElse(0L)
+              Optional.ofNullable(raid.viewerCount())
+                .map(Integer::longValue)
+                .orElse(0L)
             )
         )
       )
