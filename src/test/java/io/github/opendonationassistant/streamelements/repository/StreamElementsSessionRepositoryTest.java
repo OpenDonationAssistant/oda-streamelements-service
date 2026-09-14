@@ -50,8 +50,8 @@ class StreamElementsSessionRepositoryTest {
               Map.of(
                 "id",
                 "goal-id",
+                "mode",
                 "default",
-                true,
                 "requiredAmount",
                 Map.of("major", 100, "currency", "RUB"),
                 "accumulatedAmount",

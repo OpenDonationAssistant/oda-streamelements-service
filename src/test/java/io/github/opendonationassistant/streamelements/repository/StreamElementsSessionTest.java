@@ -40,7 +40,7 @@ public class StreamElementsSessionTest {
                         "id": "019f1ab3-dc2c-7835-b5ca-19824bbee2ad",
                         "briefDescription": "name",
                         "fullDescription": "",
-                        "default": true,
+                        "mode": "default",
                         "requiredAmount": { "major": 100, "currency": "RUB" },
                         "accumulatedAmount": { "major": 10, "currency": "RUB" }
                       }
