@@ -1,6 +1,7 @@
 package io.github.opendonationassistant.streamelements.repository;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -65,7 +66,7 @@ class StreamElementsSessionRepositoryTest {
   }
 
   @Test
-  void startSession_shouldRequestWidgetConfigsAndFillDonationGoal(
+  void createSession_shouldRequestWidgetConfigsAndFillDonationGoal(
     @Given String recipientId,
     @Given int amount
   ) {
@@ -73,14 +74,14 @@ class StreamElementsSessionRepositoryTest {
       List.of(donationGoalWidget(amount, recipientId))
     );
 
-    var session = repository.startSession(recipientId).join();
+    var session = repository.createSession(recipientId).join();
 
     verify(client).request(new WidgetConfigRequest(null, "donationgoal"));
     assertEquals(amount, session.data().tipGoal().amount());
   }
 
   @Test
-  void startSession_shouldIgnoreWidgetsOfOtherOwners(
+  void createSession_shouldIgnoreWidgetsOfOtherOwners(
     @Given String recipientId,
     @Given Integer amount
   ) {
@@ -88,13 +89,13 @@ class StreamElementsSessionRepositoryTest {
       List.of(donationGoalWidget(amount, "anotheruser"))
     );
 
-    var session = repository.startSession(recipientId).join();
+    var session = repository.createSession(recipientId).join();
 
     assertEquals(0L, session.data().tipGoal().amount());
   }
 
   @Test
-  void startSession_shouldIgnoreNonDonationGoalWidgets(
+  void createSession_shouldIgnoreNonDonationGoalWidgets(
     @Given String recipientId
   ) {
     when(client.request(any())).thenReturn(
@@ -112,17 +113,38 @@ class StreamElementsSessionRepositoryTest {
       )
     );
 
-    var session = repository.startSession(recipientId);
+    var session = repository.createSession(recipientId);
 
     assertEquals(0L, session.join().data().tipGoal().amount());
   }
 
   @Test
-  void startSession_shouldHandleMissingWidgetConfig(@Given String recipientId) {
+  void createSession_shouldHandleMissingWidgetConfig(@Given String recipientId) {
     when(client.request(any())).thenReturn(List.of());
 
-    var session = repository.startSession(recipientId);
+    var session = repository.createSession(recipientId);
 
     assertEquals(0L, session.join().data().tipGoal().amount());
+  }
+
+  @Test
+  void getSession_shouldReturnEmptyAndNotPersistOnCacheMiss(
+    @Given String recipientId
+  ) {
+    var session = repository.getSession(recipientId).join();
+
+    assertTrue(session.isEmpty());
+    assertTrue(data.get(recipientId).isEmpty());
+  }
+
+  @Test
+  void getSession_shouldReturnCachedSession(@Given String recipientId) {
+    when(client.request(any())).thenReturn(List.of());
+    var created = repository.createSession(recipientId).join();
+
+    var session = repository.getSession(recipientId).join();
+
+    assertTrue(session.isPresent());
+    assertEquals(created.data(), session.get().data());
   }
 }

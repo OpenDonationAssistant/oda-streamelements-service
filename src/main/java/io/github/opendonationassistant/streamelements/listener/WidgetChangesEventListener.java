@@ -50,9 +50,10 @@ public class WidgetChangesEventListener {
       return;
     }
 
-    repository
-      .getSession(widget.ownerId())
-      .thenAccept(session -> session.apply(widget))
-      .join();
+    var session = repository.getSession(widget.ownerId()).join();
+    if (session.isEmpty()) {
+      return;
+    }
+    session.get().apply(widget);
   }
 }

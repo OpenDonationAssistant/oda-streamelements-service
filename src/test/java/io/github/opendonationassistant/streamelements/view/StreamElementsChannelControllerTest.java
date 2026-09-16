@@ -1,6 +1,7 @@
 package io.github.opendonationassistant.streamelements.view;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import io.github.opendonationassistant.streamelements.repository.StreamElementsSessionRepository;
 import io.micronaut.http.HttpStatus;
@@ -20,7 +21,7 @@ public class StreamElementsChannelControllerTest {
   @Test
   public void testGettingExistingChannel() {
     var channel = "test-channel";
-    sessions.startSession(channel);
+    sessions.createSession(channel);
     var response = controller.getChannel(channel).join();
     assertEquals(HttpStatus.OK, response.getStatus());
     var body = (StreamElementsChannelView) response.getBody().get();
@@ -35,9 +36,22 @@ public class StreamElementsChannelControllerTest {
     assertEquals(false, body.isPartner());
   }
 
-  // @Test
-  // public void testGettingMissingChannel() {
-  //   var response = controller.getChannel("missing-channel").join();
-  //   assertEquals(HttpStatus.NOT_FOUND, response.getStatus());
-  // }
+  @Test
+  public void testGettingChannelWithoutExistingSession() {
+    var channel = "sessionless-channel";
+    assertTrue(sessions.getSession(channel).join().isEmpty());
+    var response = controller.getChannel(channel).join();
+    assertEquals(HttpStatus.OK, response.getStatus());
+    var body = (StreamElementsChannelView) response.getBody().get();
+    assertEquals(channel, body.id());
+    assertEquals(channel, body.username());
+    assertEquals(channel, body.displayName());
+    assertEquals(channel, body.alias());
+    assertEquals(channel, body.providerId());
+    assertEquals("twitch", body.provider());
+    assertEquals(false, body.suspended());
+    assertEquals(false, body.inactive());
+    assertEquals(false, body.isPartner());
+  }
+
 }

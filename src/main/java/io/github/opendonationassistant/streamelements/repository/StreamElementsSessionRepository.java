@@ -7,6 +7,7 @@ import io.github.opendonationassistant.streamelements.WidgetFacade;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
 @Singleton
@@ -30,25 +31,22 @@ public class StreamElementsSessionRepository {
     this.configClient = configClient;
   }
 
-  public CompletableFuture<StreamElementsSession> getSession(
+  public CompletableFuture<Optional<StreamElementsSession>> getSession(
     String recipientId
   ) {
-    return sessions
-      .get(recipientId)
-      .map(data -> convert(recipientId, data))
-      .orElseGet(() -> startSession(recipientId));
-  }
-
-  private CompletableFuture<StreamElementsSession> convert(
-    String recipientId,
-    StreamElementsData data
-  ) {
     return CompletableFuture.completedFuture(
-      new StreamElementsSession(recipientId, data, sessions, facade)
+      sessions.get(recipientId).map(data -> convert(recipientId, data))
     );
   }
 
-  public CompletableFuture<StreamElementsSession> startSession(
+  private StreamElementsSession convert(
+    String recipientId,
+    StreamElementsData data
+  ) {
+    return new StreamElementsSession(recipientId, data, sessions, facade);
+  }
+
+  public CompletableFuture<StreamElementsSession> createSession(
     String recipientId
   ) {
     var data = new StreamElementsData(
@@ -59,9 +57,8 @@ public class StreamElementsSessionRepository {
       null
     );
     sessions.update(recipientId, data);
-    return convert(recipientId, data).thenCompose(session ->
-      applyWidgetConfig(recipientId, session).thenApply(it -> session)
-    );
+    var session = convert(recipientId, data);
+    return applyWidgetConfig(recipientId, session).thenApply(it -> session);
   }
 
   private CompletableFuture<Void> applyWidgetConfig(

@@ -1,5 +1,6 @@
 package io.github.opendonationassistant.listener;
 
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.*;
 
 import io.github.opendonationassistant.events.widget.WidgetChangedEvent;
@@ -7,6 +8,7 @@ import io.github.opendonationassistant.streamelements.listener.WidgetChangesEven
 import io.github.opendonationassistant.streamelements.repository.StreamElementsSession;
 import io.github.opendonationassistant.streamelements.repository.StreamElementsSessionRepository;
 import io.micronaut.serde.ObjectMapper;
+import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
@@ -55,7 +57,7 @@ class WidgetChangesEventListenerTest {
   void handleDonationGoalEvent_shouldApplyWidgetOnSession() throws Exception {
     StreamElementsSession session = mock(StreamElementsSession.class);
     when(repository.getSession(any())).thenReturn(
-      CompletableFuture.completedFuture(session)
+      CompletableFuture.completedFuture(Optional.of(session))
     );
 
     WidgetChangedEvent event = ObjectMapper.getDefault()
@@ -65,5 +67,20 @@ class WidgetChangesEventListenerTest {
       new WidgetChangesEventListener(repository).handle(event);
       verify(session).apply(event.widget());
     }
+  }
+
+  @Test
+  void handle_whenNoSessionExists_shouldNotCreateSession() throws Exception {
+    when(repository.getSession(any())).thenReturn(
+      CompletableFuture.completedFuture(Optional.empty())
+    );
+
+    WidgetChangedEvent event = ObjectMapper.getDefault()
+      .readValue(json, WidgetChangedEvent.class);
+    assertNotNull(event);
+
+    new WidgetChangesEventListener(repository).handle(event);
+
+    verify(repository, never()).createSession(any());
   }
 }

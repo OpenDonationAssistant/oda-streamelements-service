@@ -34,9 +34,12 @@ public class TwitchRaidHandler
     if (fromChannelName == null) {
       return;
     }
-    repository
-      .getSession(recipientId)
-      .join()
+    var session = repository.getSession(recipientId).join();
+    if (session.isEmpty()) {
+      return;
+    }
+    session
+      .get()
       .setRaidLatest(
         new StreamElementsData.Raid(fromChannelName, event.viewerCount())
       );

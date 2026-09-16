@@ -42,9 +42,12 @@ public class HistoryItemEventHandler
       return;
     }
     var message = event.message();
-    repository
-      .getSession(event.recipientId())
-      .join()
+    var session = repository.getSession(event.recipientId()).join();
+    if (session.isEmpty()) {
+      return;
+    }
+    session
+      .get()
       .setTipsLatest(nickname, amount, Optional.ofNullable(message).orElse(""));
   }
 }

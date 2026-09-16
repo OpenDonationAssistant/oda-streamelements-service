@@ -35,9 +35,12 @@ public class TwitchSubscriptionHandler
       return;
     }
     var message = event.message();
-    repository
-      .getSession(recipientId)
-      .join()
+    var session = repository.getSession(recipientId).join();
+    if (session.isEmpty()) {
+      return;
+    }
+    session
+      .get()
       .setSubscriberLatest(
         new StreamElementsData.Subscriber(
           username,
