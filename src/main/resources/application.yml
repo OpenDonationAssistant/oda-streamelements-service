@@ -8,6 +8,9 @@ micronaut:
         descriptions: true
         step: PT1M
     enabled: true
+  serde:
+    serialization:
+      inclusion: ALWAYS
   security:
     authentication: bearer
     token:
