@@ -5,6 +5,7 @@ import io.micronaut.http.annotation.Get;
 import io.micronaut.http.annotation.Header;
 import io.micronaut.http.client.annotation.Client;
 import io.micronaut.serde.annotation.Serdeable;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Declarative HTTP client for the StreamElements REST API. The base URL is a
@@ -17,6 +18,7 @@ import io.micronaut.serde.annotation.Serdeable;
 @Client("https://api.streamelements.com")
 public interface StreamElementsOverlayApi {
   @Get("/kappa/v2/channels/me")
+  @Nullable
   Channel me(@Header("Authorization") String authorization);
 
   @Get("/kappa/v2/overlays/{channel}/{overlayId}")
@@ -31,5 +33,5 @@ public interface StreamElementsOverlayApi {
    * {@code id} component to the {@code _id} wire name.
    */
   @Serdeable
-  record Channel(@JsonProperty("_id") String id) {}
+  record Channel(@Nullable @JsonProperty("_id") String id) {}
 }

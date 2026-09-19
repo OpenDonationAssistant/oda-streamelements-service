@@ -4,11 +4,14 @@ import io.github.opendonationassistant.commons.logging.ODALogger;
 import io.github.opendonationassistant.streamelements.WidgetConfigClient;
 import io.github.opendonationassistant.streamelements.WidgetConfigClient.WidgetConfigRequest;
 import io.github.opendonationassistant.streamelements.WidgetFacade;
+import io.micronaut.scheduling.TaskExecutors;
 import jakarta.inject.Inject;
+import jakarta.inject.Named;
 import jakarta.inject.Singleton;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutorService;
 
 @Singleton
 public class StreamElementsSessionRepository {
@@ -19,16 +22,19 @@ public class StreamElementsSessionRepository {
   private final StreamElementsDataRepository sessions;
   private final WidgetFacade facade;
   private final WidgetConfigClient configClient;
+  private final ExecutorService blockingExecutor;
 
   @Inject
   public StreamElementsSessionRepository(
     StreamElementsDataRepository sessions,
     WidgetFacade facade,
-    WidgetConfigClient configClient
+    WidgetConfigClient configClient,
+    @Named(TaskExecutors.BLOCKING) ExecutorService blockingExecutor
   ) {
     this.sessions = sessions;
     this.facade = facade;
     this.configClient = configClient;
+    this.blockingExecutor = blockingExecutor;
   }
 
   public CompletableFuture<Optional<StreamElementsSession>> getSession(
@@ -65,10 +71,12 @@ public class StreamElementsSessionRepository {
     String recipientId,
     StreamElementsSession session
   ) {
-    return CompletableFuture.supplyAsync(() ->
-      configClient.request(
-        new WidgetConfigRequest(null, DONATION_GOAL_WIDGET_TYPE)
-      )
+    return CompletableFuture.supplyAsync(
+      () ->
+        configClient.request(
+          new WidgetConfigRequest(null, DONATION_GOAL_WIDGET_TYPE)
+        ),
+      blockingExecutor
     )
       .thenAccept(widgets -> {
         widgets

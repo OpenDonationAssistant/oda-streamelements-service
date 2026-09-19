@@ -30,19 +30,24 @@ public class StreamElementsSessionController extends BaseController {
   ) {
     var ownerId = getOwnerId(auth);
     if (ownerId.isEmpty()) {
-      return CompletableFuture.completedFuture(HttpResponse.notFound());
+      return CompletableFuture.completedFuture(HttpResponse.unauthorized());
     }
-    var session = repository
-      .getSession(ownerId.get())
-      .join()
-      .orElseGet(() -> repository.createSession(ownerId.get()).join());
-    return CompletableFuture.completedFuture(
-      HttpResponse.ok(
-        new StreamElementsSessionView(
-          new StreamElementsSessionView.Channel(ownerId.get()),
-          StreamElementsSessionView.ViewSession.of(session)
+    var recipientId = ownerId.get();
+    return repository
+      .getSession(recipientId)
+      .thenCompose(session -> {
+        if (session.isPresent()) {
+          return CompletableFuture.completedFuture(session.get());
+        }
+        return repository.createSession(recipientId);
+      })
+      .thenApply(session ->
+        HttpResponse.ok(
+          new StreamElementsSessionView(
+            new StreamElementsSessionView.Channel(recipientId),
+            StreamElementsSessionView.ViewSession.of(session)
+          )
         )
-      )
-    );
+      );
   }
 }

@@ -16,22 +16,36 @@ final class SeOverlayUrl {
 
   static String parse(@Nullable String url) {
     if (url == null || url.isBlank()) {
-      throw new IllegalArgumentException("Overlay URL must not be null or blank");
+      throw new InvalidOverlayUrlException(
+        "Overlay URL must not be null or blank"
+      );
     }
-    var uri = URI.create(url.trim());
-    if (!isAllowedHost(uri.getHost())) {
-      throw new IllegalArgumentException("Overlay URL host is not allowed");
+    var uri = toUri(url.trim());
+    if (!isStreamElementsOwned(uri.getHost())) {
+      throw new InvalidOverlayUrlException("Overlay URL host is not allowed");
     }
     var segments = pathSegments(uri.getPath());
     if (segments.size() != 3 || !OVERLAY.equals(segments.get(0))) {
-      throw new IllegalArgumentException(
+      throw new InvalidOverlayUrlException(
         "Overlay URL must match /overlay/{overlayId}/{overlayToken}"
       );
     }
     return segments.get(1);
   }
 
-  private static boolean isAllowedHost(@Nullable String host) {
+  private static URI toUri(String url) {
+    try {
+      return URI.create(url);
+    } catch (IllegalArgumentException exception) {
+      throw new InvalidOverlayUrlException(
+        "Overlay URL is malformed",
+        exception
+      );
+    }
+  }
+
+  /** True when {@code host} is {@code streamelements.com} or one of its subdomains. */
+  static boolean isStreamElementsOwned(@Nullable String host) {
     if (host == null) {
       return false;
     }
@@ -43,6 +57,8 @@ final class SeOverlayUrl {
     if (path == null || path.isBlank()) {
       return List.of();
     }
-    return Arrays.stream(path.split("/")).filter(part -> !part.isBlank()).toList();
+    return Arrays.stream(path.split("/"))
+      .filter(part -> !part.isBlank())
+      .toList();
   }
 }

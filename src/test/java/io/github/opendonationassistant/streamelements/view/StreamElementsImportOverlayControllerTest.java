@@ -7,6 +7,7 @@ import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 import io.github.opendonationassistant.streamelements.overlay.ConversionWarning;
+import io.github.opendonationassistant.streamelements.overlay.InvalidOverlayUrlException;
 import io.github.opendonationassistant.streamelements.overlay.OverlayWidgetImportResult;
 import io.github.opendonationassistant.streamelements.overlay.OverlayWidgetImporter;
 import io.github.opendonationassistant.streamelements.overlay.StreamElementsOverlayClient;
@@ -14,6 +15,8 @@ import io.micronaut.http.HttpStatus;
 import io.micronaut.security.authentication.Authentication;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.ForkJoinPool;
 import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 
@@ -28,8 +31,13 @@ class StreamElementsImportOverlayControllerTest {
   private final OverlayWidgetImporter importer = mock(
     OverlayWidgetImporter.class
   );
+  private final ExecutorService blockingExecutor = ForkJoinPool.commonPool();
   private final StreamElementsImportOverlayController controller =
-    new StreamElementsImportOverlayController(client, importer);
+    new StreamElementsImportOverlayController(
+      client,
+      importer,
+      blockingExecutor
+    );
   private final StreamElementsImportOverlayController.ImportOverlayRequest request =
     new StreamElementsImportOverlayController.ImportOverlayRequest(
       OVERLAY_URL,
@@ -46,7 +54,7 @@ class StreamElementsImportOverlayControllerTest {
       "reason",
       "placeholder"
     );
-    when(importer.createWidget("{}", "user")).thenReturn(
+    when(importer.createWidget("{}", "user", "token-1")).thenReturn(
       new OverlayWidgetImportResult("widget-1", List.of(warning))
     );
 
@@ -67,13 +75,25 @@ class StreamElementsImportOverlayControllerTest {
   @Test
   void importOverlay_returnsBadRequestForInvalidUrl() {
     when(client.fetchOverlay(any(), any(), any())).thenThrow(
-      new IllegalArgumentException("bad url")
+      new InvalidOverlayUrlException("bad url")
     );
 
     var response = controller.importOverlay(request, auth("user")).join();
 
     assertEquals(HttpStatus.BAD_REQUEST, response.getStatus());
     verifyNoInteractions(importer);
+  }
+
+  @Test
+  void importOverlay_returnsBadGatewayWhenConversionFails() {
+    when(client.fetchOverlay(any(), any(), any())).thenReturn("{}");
+    when(importer.createWidget(any(), any(), any())).thenThrow(
+      new IllegalArgumentException("unparseable overlay json")
+    );
+
+    var response = controller.importOverlay(request, auth("user")).join();
+
+    assertEquals(HttpStatus.BAD_GATEWAY, response.getStatus());
   }
 
   @Test

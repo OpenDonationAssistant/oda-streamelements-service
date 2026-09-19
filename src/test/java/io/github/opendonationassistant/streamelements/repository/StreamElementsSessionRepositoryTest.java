@@ -17,6 +17,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ForkJoinPool;
 import org.instancio.junit.Given;
 import org.instancio.junit.InstancioExtension;
 import org.junit.jupiter.api.Test;
@@ -30,7 +31,12 @@ class StreamElementsSessionRepositoryTest {
   private final StreamElementsDataRepository data =
     new StreamElementsDataRepository(new HashMap<>());
   private final StreamElementsSessionRepository repository =
-    new StreamElementsSessionRepository(data, facade, client);
+    new StreamElementsSessionRepository(
+      data,
+      facade,
+      client,
+      ForkJoinPool.commonPool()
+    );
 
   private Widget donationGoalWidget(int accumulatedMajor, String ownerId) {
     return new Widget(

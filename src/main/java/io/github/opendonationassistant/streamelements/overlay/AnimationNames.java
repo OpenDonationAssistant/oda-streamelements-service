@@ -18,7 +18,7 @@ final class AnimationNames {
     "fadeInDown", "fadeInDownBig", "fadeInLeft", "fadeInLeftBig",
     "fadeInRight", "fadeInRightBig", "fadeInUp", "fadeInUpBig",
     "fadeInTopLeft", "fadeInTopRight", "fadeInBottomLeft",
-    "fadeInBottomRight", "flip", "flinInX", "flipInY", "lightSpeedInRight",
+    "fadeInBottomRight", "flip", "flipInX", "flipInY", "lightSpeedInRight",
     "lightSpeedInLeft", "rotateIn", "rotateInDownLeft", "rotateInDownRight",
     "rotateInUpLeft", "rotateInUpRight", "hinge", "rollIn", "zoomIn",
     "zoomInDown", "zoomInLeft", "zoomInRight", "zoomInUp", "slideInDown",

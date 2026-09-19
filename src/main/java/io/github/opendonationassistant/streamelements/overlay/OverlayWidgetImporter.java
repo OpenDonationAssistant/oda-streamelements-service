@@ -4,8 +4,10 @@ import io.github.opendonationassistant.commons.logging.ODALogger;
 import io.github.opendonationassistant.events.widget.Widget;
 import io.github.opendonationassistant.events.widget.WidgetCommandSender;
 import io.github.opendonationassistant.events.widget.WidgetCommandSender.WidgetUpdateCommand;
+import io.github.opendonationassistant.rabbit.RabbitClient;
 import io.github.opendonationassistant.streamelements.overlay.WidgetCreateClient.CreateWidgetRequest;
 import jakarta.inject.Inject;
+import jakarta.inject.Named;
 import jakarta.inject.Singleton;
 import java.util.List;
 import java.util.Map;
@@ -13,7 +15,8 @@ import java.util.Map;
 /**
  * Converts a StreamElements overlay JSON into an ODA `canvas` widget.
  *
- * <p>Flow: RPC `widget.create-request` creates the widget, then a
+ * <p>Flow: StreamElements-owned assets are re-hosted on the ODA CDN via the
+ * commands facade, RPC `widget.create-request` creates the widget, then a
  * `WidgetUpdateCommand` (exchange `widgets`, key `command`) sets its
  * `elements` config property.
  */
@@ -27,23 +30,38 @@ public class OverlayWidgetImporter {
   private final OverlayConverter converter;
   private final WidgetCreateClient createClient;
   private final WidgetCommandSender commandSender;
+  private final StreamElementsOverlayClient client;
+  private final RabbitClient commandsFacade;
 
   @Inject
   public OverlayWidgetImporter(
     OverlayConverter converter,
     WidgetCreateClient createClient,
-    WidgetCommandSender commandSender
+    WidgetCommandSender commandSender,
+    StreamElementsOverlayClient client,
+    @Named("commands") RabbitClient commandsFacade
   ) {
     this.converter = converter;
     this.createClient = createClient;
     this.commandSender = commandSender;
+    this.client = client;
+    this.commandsFacade = commandsFacade;
   }
 
   public OverlayWidgetImportResult createWidget(
     String overlayJson,
-    String recipientId
+    String recipientId,
+    String tokenId
   ) {
-    var conversion = converter.convert(overlayJson);
+    var token = client.resolveToken(recipientId, tokenId);
+    var conversion = OverlayAssets.rehost(
+      converter.convert(overlayJson),
+      recipientId,
+      token,
+      client,
+      commandsFacade,
+      log
+    );
     log.info(
       "Creating overlay widget",
       Map.of(

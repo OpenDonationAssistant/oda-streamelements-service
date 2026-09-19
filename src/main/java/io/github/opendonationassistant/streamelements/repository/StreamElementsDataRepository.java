@@ -9,7 +9,7 @@ import java.util.Optional;
 @Singleton
 public class StreamElementsDataRepository {
 
-  private ODALogger log = new ODALogger(this);
+  private final ODALogger log = new ODALogger(this);
   private final Map<String, StreamElementsData> sessions;
 
   @Inject
@@ -24,17 +24,7 @@ public class StreamElementsDataRepository {
   }
 
   public void update(String recipientId, StreamElementsData data) {
-    log.info(
-      "Update session data",
-      Map.of(
-        "recipientId",
-        recipientId,
-        "data",
-        data,
-        "sessions",
-        sessions.toString()
-      )
-    );
+    log.debug("Update session data", Map.of("recipientId", recipientId));
     sessions.put(recipientId, data);
   }
 }

@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
+import java.util.stream.Stream;
 
 public class StreamElementsSession {
 
@@ -61,22 +62,27 @@ public class StreamElementsSession {
     widget
       .config()
       .getProperty("goal")
-      .map(goal -> (List<Map<String, Object>>) goal.value())
-      .ifPresent(properties -> {
-        properties
-          .stream()
-          .filter(item ->
-            Optional.ofNullable(item.get("mode"))
-              .map(String::valueOf)
-              .filter("default"::equalsIgnoreCase)
-              .isPresent()
-          )
-          .findFirst()
-          .map(item -> (Map<String, Object>) item.get("accumulatedAmount"))
-          .map(amount -> (Integer) amount.get("major"))
-          .ifPresent(amount -> {
-            setDonationgoalState(new Amount(amount, 0, "RUB"));
-          });
+      .stream()
+      .map(property -> property.value())
+      .flatMap(value ->
+        value instanceof List<?> list ? list.stream() : Stream.of()
+      )
+      .flatMap(listItem ->
+        listItem instanceof Map<?, ?> map ? Stream.of(map) : Stream.of()
+      )
+      .filter(goal ->
+        Optional.ofNullable(goal.get("mode"))
+          .map(String::valueOf)
+          .filter("default"::equalsIgnoreCase)
+          .isPresent()
+      )
+      .forEach(goal -> {
+        if (
+          goal.get("accumulatedAmount") instanceof Map<?, ?> amount &&
+          amount.get("major") instanceof Number major
+        ) {
+          setDonationgoalState(new Amount(major.intValue(), 0, "RUB"));
+        }
       });
   }
 

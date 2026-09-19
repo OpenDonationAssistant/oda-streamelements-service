@@ -26,10 +26,6 @@ public class HistoryItemEventHandler
 
   @Override
   public void handle(HistoryItemEvent event) throws IOException {
-    final var originId = event.originId();
-    if (originId == null) {
-      return;
-    }
     if (!"payment".equals(event.type())) {
       return;
     }
