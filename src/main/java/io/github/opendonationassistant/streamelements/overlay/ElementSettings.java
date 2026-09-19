@@ -13,7 +13,7 @@ final class ElementSettings {
     "fixed-coordinates-container";
   static final String ANIMATIONS = "animations";
 
-  private static final String DEFAULT_COLOR = "#FFFFFF";
+  private static final String DEFAULT_COLOR = "#FFFFFF00";
   private static final String DEFAULT_BORDER_COLOR = "#000000";
   private static final String DEFAULT_FONT_FAMILY = "Roboto";
   private static final double DEFAULT_FONT_SIZE = 24d;
