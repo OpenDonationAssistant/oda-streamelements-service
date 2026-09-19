@@ -167,7 +167,10 @@ public class OverlayConverter {
     var shadows = shadows(widget, text, textCss, warnings);
 
     var settings = ElementSettings.label();
-    settings.put("value", JsonValues.string(text.get("value"), ""));
+    settings.put(
+      "value",
+      SeVariables.toOda(JsonValues.string(text.get("value"), ""))
+    );
     settings.put("font", font(textCss, shadows));
     settings.put("align", align(textCss.get("text-align")));
     settings.put("width", OverlayGeometry.toSize(css.get("width")));

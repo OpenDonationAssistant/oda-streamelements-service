@@ -131,6 +131,51 @@ class OverlayConverterTest {
   }
 
   @Test
+  void convert_translatesStreamElementsPlaceholdersToOdaSyntax() {
+    var conversion = converter.convert(
+      """
+      { "widgets": [ { "id": 1, "type": "text", "name": "TIP",
+        "css": {}, "text": { "value": "{name} donated {amount} {currency}" } } ] }
+      """
+    );
+
+    assertEquals(
+      "<name> donated <amount> <currency>",
+      byName(conversion, "TIP").settings().get("value")
+    );
+  }
+
+  @Test
+  void convert_translatesCountdownPlaceholders() {
+    var conversion = converter.convert(
+      """
+      { "widgets": [ { "id": 1, "type": "se-widget-countdown", "name": "CD",
+        "css": {}, "text": { "value": "{minutes}:{seconds}" } } ] }
+      """
+    );
+
+    assertEquals(
+      "<minutes>:<seconds>",
+      byName(conversion, "CD").settings().get("value")
+    );
+  }
+
+  @Test
+  void convert_leavesUnknownAndUnclosedPlaceholdersUntouched() {
+    var conversion = converter.convert(
+      """
+      { "widgets": [ { "id": 1, "type": "text", "name": "RAW",
+        "css": {}, "text": { "value": "{unknown} {name" } } ] }
+      """
+    );
+
+    assertEquals(
+      "{unknown} {name",
+      byName(conversion, "RAW").settings().get("value")
+    );
+  }
+
+  @Test
   void convert_wrapsAnimationsWhenPresent() {
     var conversion = converter.convert(SCENE);
 
