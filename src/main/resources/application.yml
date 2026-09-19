@@ -26,6 +26,9 @@ micronaut:
     event-listener:
       type: fixed
       nThreads: 1
+oda:
+  cdn:
+    base-url: ${ODA_CDN_BASE_URL:https://cdn.oda.digital/files/}
 endpoints:
   prometheus:
     sensitive: false

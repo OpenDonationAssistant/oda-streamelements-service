@@ -27,6 +27,9 @@ class OverlayWidgetImporterTest {
     "https://cdn.streamelements.com/bar.png";
 
   private final OverlayConverter converter = mock(OverlayConverter.class);
+  private final OverlayAssets overlayAssets = new OverlayAssets(
+    "https://cdn.oda.digital/files/"
+  );
   private final WidgetCreateClient createClient = mock(
     WidgetCreateClient.class
   );
@@ -40,6 +43,7 @@ class OverlayWidgetImporterTest {
 
   private final OverlayWidgetImporter importer = new OverlayWidgetImporter(
     converter,
+    overlayAssets,
     createClient,
     widgetCommandSender,
     client,

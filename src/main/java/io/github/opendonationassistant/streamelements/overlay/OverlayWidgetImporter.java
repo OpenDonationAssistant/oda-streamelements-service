@@ -28,6 +28,7 @@ public class OverlayWidgetImporter {
 
   private final ODALogger log = new ODALogger(this);
   private final OverlayConverter converter;
+  private final OverlayAssets overlayAssets;
   private final WidgetCreateClient createClient;
   private final WidgetCommandSender commandSender;
   private final StreamElementsOverlayClient client;
@@ -36,12 +37,14 @@ public class OverlayWidgetImporter {
   @Inject
   public OverlayWidgetImporter(
     OverlayConverter converter,
+    OverlayAssets overlayAssets,
     WidgetCreateClient createClient,
     WidgetCommandSender commandSender,
     StreamElementsOverlayClient client,
     @Named("commands") RabbitClient commandsFacade
   ) {
     this.converter = converter;
+    this.overlayAssets = overlayAssets;
     this.createClient = createClient;
     this.commandSender = commandSender;
     this.client = client;
@@ -54,7 +57,7 @@ public class OverlayWidgetImporter {
     String tokenId
   ) {
     var token = client.resolveToken(recipientId, tokenId);
-    var conversion = OverlayAssets.rehost(
+    var conversion = overlayAssets.rehost(
       converter.convert(overlayJson),
       recipientId,
       token,

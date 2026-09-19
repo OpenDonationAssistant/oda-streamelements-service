@@ -3,7 +3,10 @@ package io.github.opendonationassistant.streamelements.overlay;
 import com.fasterxml.uuid.Generators;
 import io.github.opendonationassistant.commons.logging.ODALogger;
 import io.github.opendonationassistant.rabbit.RabbitClient;
+import io.micronaut.context.annotation.Value;
 import io.micronaut.serde.annotation.Serdeable;
+import jakarta.inject.Inject;
+import jakarta.inject.Singleton;
 import java.net.URI;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -19,13 +22,17 @@ import java.util.concurrent.Executors;
  * so the bearer token is never sent to third-party hosts. A failed asset keeps
  * its original URL; the import itself never fails because of one asset.
  */
-final class OverlayAssets {
+@Singleton
+public class OverlayAssets {
 
-  private static final String CDN_PREFIX = "https://cdn.oda.digital/files/";
+  private final String cdnBaseUrl;
 
-  private OverlayAssets() {}
+  @Inject
+  public OverlayAssets(@Value("${oda.cdn.base-url}") String cdnBaseUrl) {
+    this.cdnBaseUrl = cdnBaseUrl;
+  }
 
-  static OverlayConversion rehost(
+  OverlayConversion rehost(
     OverlayConversion conversion,
     String recipientId,
     String token,
@@ -54,7 +61,7 @@ final class OverlayAssets {
    * {@link #rehost(String, String, String, StreamElementsOverlayClient,
    * RabbitClient, ODALogger)}, so one bad asset never fails the whole import.
    */
-  private static List<OverlayElement> rehostAll(
+  private List<OverlayElement> rehostAll(
     List<OverlayElement> source,
     String recipientId,
     String token,
@@ -84,7 +91,7 @@ final class OverlayAssets {
     }
   }
 
-  private static OverlayElement rehostElement(
+  private OverlayElement rehostElement(
     OverlayElement element,
     String recipientId,
     String token,
@@ -122,7 +129,7 @@ final class OverlayAssets {
     );
   }
 
-  private static void rehostUrlSetting(
+  private void rehostUrlSetting(
     Map<String, Object> settings,
     String recipientId,
     String token,
@@ -138,7 +145,7 @@ final class OverlayAssets {
     }
   }
 
-  private static String rehost(
+  private String rehost(
     String url,
     String recipientId,
     String token,
@@ -155,7 +162,7 @@ final class OverlayAssets {
       commandsFacade.sendCommand(
         new UploadFileCommand(recipientId, content, filename)
       );
-      return CDN_PREFIX + filename;
+      return cdnBaseUrl + filename;
     } catch (RuntimeException exception) {
       log.warn(
         "Could not rehost StreamElements asset",

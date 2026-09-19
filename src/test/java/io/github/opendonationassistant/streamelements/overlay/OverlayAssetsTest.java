@@ -28,6 +28,9 @@ class OverlayAssetsTest {
   );
   private final RabbitClient commandsFacade = mock(RabbitClient.class);
   private final ODALogger log = new ODALogger(this);
+  private final OverlayAssets overlayAssets = new OverlayAssets(
+    "https://cdn.oda.digital/files/"
+  );
 
   @Test
   void rehost_preservesElementOrderAndRewritesStreamElementsAssets() {
@@ -44,7 +47,7 @@ class OverlayAssetsTest {
       List.of()
     );
 
-    var result = OverlayAssets.rehost(
+    var result = overlayAssets.rehost(
       conversion,
       "user",
       "se-token",
@@ -82,7 +85,7 @@ class OverlayAssetsTest {
       List.of()
     );
 
-    var result = OverlayAssets.rehost(
+    var result = overlayAssets.rehost(
       conversion,
       "user",
       "se-token",
@@ -103,7 +106,7 @@ class OverlayAssetsTest {
       List.of()
     );
 
-    var result = OverlayAssets.rehost(
+    var result = overlayAssets.rehost(
       conversion,
       "user",
       "se-token",

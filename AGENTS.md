@@ -93,7 +93,7 @@ No Maven wrapper is committed (no `mvnw`) — use plain `mvn`.
 
 ## NOTES
 - `Application.main` hardcodes `.defaultEnvironments("standalone")`, so `application-standalone.yml` **always** loads; it hardcodes Infinispan HotRod `10.43.81.28:11222` with `admin/password`. Override for local dev.
-- `JWKS_URI` is the only required runtime env var (Keycloak JWKS for JWT bearer auth).
+- `JWKS_URI` is the only **required** runtime env var (Keycloak JWKS for JWT bearer auth). `ODA_CDN_BASE_URL` is optional and overrides `oda.cdn.base-url` (defaults to `https://cdn.oda.digital/files/`).
 - `@MicronautTest` tests require a **Docker daemon** (`micronaut-test-resources-infinispan` spins up Infinispan via Testcontainers). There is **no RabbitMQ test resource** — contrary to older notes; Rabbit clients are mocked in unit tests.
 - Listener executors are `fixed` `nThreads: 1` (`command-listener`, `config-listener`, `event-listener`); handlers block with `.join()`.
 - **Dead/unwired code:** `SerdeableEntryMarshaller` (unreferenced), `EventsListener.repository` (injected, never used), `StreamElementsChannelController` repository check commented out (always returns 200 with a fabricated channel), `command-listener` executor declared but unused.
