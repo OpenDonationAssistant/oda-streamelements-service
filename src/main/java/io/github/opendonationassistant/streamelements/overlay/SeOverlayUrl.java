@@ -2,11 +2,9 @@ package io.github.opendonationassistant.streamelements.overlay;
 
 import io.github.opendonationassistant.commons.logging.ODALogger;
 import java.net.URI;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 import org.jspecify.annotations.Nullable;
 
 /** Parses the overlay id from a StreamElements overlay browser-source URL. */

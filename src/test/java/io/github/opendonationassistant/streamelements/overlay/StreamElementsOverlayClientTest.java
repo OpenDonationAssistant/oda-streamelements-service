@@ -60,23 +60,19 @@ class StreamElementsOverlayClientTest {
 
   @Test
   void fetchOverlay_rejectsInvalidUrlBeforeResolvingToken() {
-    assertThrows(
-      InvalidOverlayUrlException.class,
-      () ->
-        client.fetchOverlay(
-          "https://evil.com/overlay/overlay-1/token",
-          "user",
-          "token-1"
-        )
+    assertThrows(InvalidOverlayUrlException.class, () ->
+      client.fetchOverlay(
+        "https://evil.com/overlay/overlay-1/token",
+        "user",
+        "token-1"
+      )
     );
     verifyNoInteractions(tokenRpc, api);
   }
 
   @Test
   void fetchOverlay_throwsWhenTokenIsNull() {
-    when(tokenRpc.token(any())).thenReturn(
-      new TokenResponse(null, "no token")
-    );
+    when(tokenRpc.token(any())).thenReturn(new TokenResponse(null, "no token"));
 
     assertThrows(
       StreamElementsOverlayClient.SeTokenUnavailableException.class,
@@ -102,15 +98,16 @@ class StreamElementsOverlayClientTest {
   void downloadAsset_sendsBearerTokenAndReturnsContent() {
     var content = new byte[] { 1, 2, 3 };
     when(httpClient.toBlocking()).thenReturn(blockingClient);
-    when(blockingClient.retrieve(any(HttpRequest.class), eq(byte[].class)))
-      .thenAnswer(invocation -> {
-        HttpRequest<?> request = invocation.getArgument(0);
-        assertEquals(
-          "Bearer se-token",
-          request.getHeaders().get(HttpHeaders.AUTHORIZATION)
-        );
-        return content;
-      });
+    when(
+      blockingClient.retrieve(any(HttpRequest.class), eq(byte[].class))
+    ).thenAnswer(invocation -> {
+      HttpRequest<?> request = invocation.getArgument(0);
+      assertEquals(
+        "Bearer se-token",
+        request.getHeaders().get(HttpHeaders.AUTHORIZATION)
+      );
+      return content;
+    });
 
     var downloaded = client.downloadAsset("se-token", ASSET_URL);
 
