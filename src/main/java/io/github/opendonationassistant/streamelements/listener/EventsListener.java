@@ -2,7 +2,6 @@ package io.github.opendonationassistant.streamelements.listener;
 
 import io.github.opendonationassistant.events.MessageProcessor;
 import io.github.opendonationassistant.rabbit.Exchange;
-import io.github.opendonationassistant.streamelements.repository.StreamElementsSessionRepository;
 import io.micronaut.messaging.annotation.MessageHeader;
 import io.micronaut.rabbitmq.annotation.Queue;
 import io.micronaut.rabbitmq.annotation.RabbitListener;
@@ -35,15 +34,10 @@ public class EventsListener {
       )
     )
   );
-  private final StreamElementsSessionRepository repository;
   private final MessageProcessor processor;
 
   @Inject
-  public EventsListener(
-    StreamElementsSessionRepository repository,
-    MessageProcessor processor
-  ) {
-    this.repository = repository;
+  public EventsListener(MessageProcessor processor) {
     this.processor = processor;
   }
 

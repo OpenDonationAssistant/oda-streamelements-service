@@ -134,6 +134,19 @@ class StreamElementsSessionRepositoryTest {
   }
 
   @Test
+  void createSession_shouldReturnEmptySessionWhenWidgetConfigFails(
+    @Given String recipientId
+  ) {
+    when(client.request(any())).thenThrow(
+      new IllegalStateException("rpc down")
+    );
+
+    var session = repository.createSession(recipientId).join();
+
+    assertEquals(0L, session.data().tipGoal().amount());
+  }
+
+  @Test
   void getSession_shouldReturnEmptyAndNotPersistOnCacheMiss(
     @Given String recipientId
   ) {

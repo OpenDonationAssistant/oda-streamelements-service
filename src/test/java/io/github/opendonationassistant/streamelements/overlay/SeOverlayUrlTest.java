@@ -29,32 +29,65 @@ class SeOverlayUrlTest {
 
   @Test
   void parse_rejectsForeignHost() {
-    assertThrows(
-      InvalidOverlayUrlException.class,
-      () -> SeOverlayUrl.parse("https://evil.com/overlay/abc123/token")
+    assertThrows(InvalidOverlayUrlException.class, () ->
+      SeOverlayUrl.parse("https://evil.com/overlay/abc123/token")
     );
   }
 
   @Test
   void parse_rejectsMissingOverlayPrefix() {
-    assertThrows(
-      InvalidOverlayUrlException.class,
-      () -> SeOverlayUrl.parse("https://streamelements.com/abc123/token")
+    assertThrows(InvalidOverlayUrlException.class, () ->
+      SeOverlayUrl.parse("https://streamelements.com/abc123/token")
     );
   }
 
   @Test
   void parse_rejectsMissingTokenSegment() {
-    assertThrows(
-      InvalidOverlayUrlException.class,
-      () -> SeOverlayUrl.parse("https://streamelements.com/overlay/abc123")
+    assertThrows(InvalidOverlayUrlException.class, () ->
+      SeOverlayUrl.parse("https://streamelements.com/overlay/abc123")
     );
   }
 
   @Test
   void parse_rejectsBlankAndNull() {
-    assertThrows(InvalidOverlayUrlException.class, () -> SeOverlayUrl.parse(""));
-    assertThrows(InvalidOverlayUrlException.class, () -> SeOverlayUrl.parse("   "));
-    assertThrows(InvalidOverlayUrlException.class, () -> SeOverlayUrl.parse(null));
+    assertThrows(InvalidOverlayUrlException.class, () -> SeOverlayUrl.parse("")
+    );
+    assertThrows(InvalidOverlayUrlException.class, () ->
+      SeOverlayUrl.parse("   ")
+    );
+    assertThrows(InvalidOverlayUrlException.class, () ->
+      SeOverlayUrl.parse(null)
+    );
+  }
+
+  @Test
+  void parse_rejectsEmptyPathSegments() {
+    assertThrows(InvalidOverlayUrlException.class, () ->
+      SeOverlayUrl.parse("https://streamelements.com/overlay//token")
+    );
+  }
+
+  @Test
+  void parse_rejectsTrailingSlash() {
+    assertThrows(InvalidOverlayUrlException.class, () ->
+      SeOverlayUrl.parse("https://streamelements.com/overlay/abc123/token/")
+    );
+  }
+
+  @Test
+  void parse_rejectsExtraSegments() {
+    assertThrows(InvalidOverlayUrlException.class, () ->
+      SeOverlayUrl.parse(
+        "https://streamelements.com/overlay/abc123/token/extra"
+      )
+    );
+  }
+
+  @Test
+  void parse_acceptsStreamElementsSubdomain() {
+    assertEquals(
+      "abc123",
+      SeOverlayUrl.parse("https://cdn.streamelements.com/overlay/abc123/token")
+    );
   }
 }

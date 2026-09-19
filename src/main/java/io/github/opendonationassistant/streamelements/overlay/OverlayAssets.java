@@ -6,7 +6,10 @@ import io.github.opendonationassistant.rabbit.RabbitClient;
 import io.micronaut.serde.annotation.Serdeable;
 import java.net.URI;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executors;
 
 /**
  * Re-hosts StreamElements-owned overlay assets (images, videos, audio, and the
@@ -30,18 +33,55 @@ final class OverlayAssets {
     RabbitClient commandsFacade,
     ODALogger log
   ) {
-    var elements = conversion
-      .elements()
-      .stream()
-      .map(element ->
-        rehostElement(element, recipientId, token, client, commandsFacade, log)
-      )
-      .toList();
+    var elements = rehostAll(
+      conversion.elements(),
+      recipientId,
+      token,
+      client,
+      commandsFacade,
+      log
+    );
     return new OverlayConversion(
       conversion.name(),
       elements,
       conversion.warnings()
     );
+  }
+
+  /**
+   * Re-hosts every element concurrently on virtual threads while preserving the
+   * original element order. Asset-level failures stay isolated in
+   * {@link #rehost(String, String, String, StreamElementsOverlayClient,
+   * RabbitClient, ODALogger)}, so one bad asset never fails the whole import.
+   */
+  private static List<OverlayElement> rehostAll(
+    List<OverlayElement> source,
+    String recipientId,
+    String token,
+    StreamElementsOverlayClient client,
+    RabbitClient commandsFacade,
+    ODALogger log
+  ) {
+    try (var executor = Executors.newVirtualThreadPerTaskExecutor()) {
+      var futures = source
+        .stream()
+        .map(element ->
+          CompletableFuture.supplyAsync(
+            () ->
+              rehostElement(
+                element,
+                recipientId,
+                token,
+                client,
+                commandsFacade,
+                log
+              ),
+            executor
+          )
+        )
+        .toList();
+      return futures.stream().map(CompletableFuture::join).toList();
+    }
   }
 
   private static OverlayElement rehostElement(
@@ -119,7 +159,11 @@ final class OverlayAssets {
     } catch (RuntimeException exception) {
       log.warn(
         "Could not rehost StreamElements asset",
-        Map.of("url", url, "error", exception.getClass().getSimpleName())
+        Map.of(
+          "url", url,
+          "error", exception.getClass().getSimpleName(),
+          "message", String.valueOf(exception.getMessage())
+        )
       );
       return url;
     }

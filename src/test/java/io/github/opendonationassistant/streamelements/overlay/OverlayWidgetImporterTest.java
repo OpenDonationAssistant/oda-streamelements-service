@@ -59,7 +59,9 @@ class OverlayWidgetImporterTest {
 
     var result = importer.createWidget("{}", "user", "token-1");
 
-    var uploadCaptor = ArgumentCaptor.forClass(UploadFileCommand.class);
+    var uploadCaptor = ArgumentCaptor.forClass(
+      OverlayAssets.UploadFileCommand.class
+    );
     verify(commandsFacade).sendCommand(uploadCaptor.capture());
     var upload = uploadCaptor.getValue();
     assertEquals("user", upload.recipientId());

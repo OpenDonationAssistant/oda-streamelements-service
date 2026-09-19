@@ -1,13 +1,18 @@
 package io.github.opendonationassistant.streamelements.overlay;
 
+import io.github.opendonationassistant.commons.logging.ODALogger;
 import java.net.URI;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import org.jspecify.annotations.Nullable;
 
 /** Parses the overlay id from a StreamElements overlay browser-source URL. */
 final class SeOverlayUrl {
+
+  private static ODALogger log = new ODALogger(SeOverlayUrl.class);
 
   private static final String HOST = "streamelements.com";
   private static final String OVERLAY = "overlay";
@@ -30,7 +35,14 @@ final class SeOverlayUrl {
         "Overlay URL must match /overlay/{overlayId}/{overlayToken}"
       );
     }
-    return segments.get(1);
+    var overlayId = segments.get(1);
+    var overlayToken = segments.get(2);
+    if (overlayId.isBlank() || overlayToken.isBlank()) {
+      throw new InvalidOverlayUrlException(
+        "Overlay URL must match /overlay/{overlayId}/{overlayToken}"
+      );
+    }
+    return overlayId;
   }
 
   private static URI toUri(String url) {
@@ -57,8 +69,21 @@ final class SeOverlayUrl {
     if (path == null || path.isBlank()) {
       return List.of();
     }
-    return Arrays.stream(path.split("/"))
-      .filter(part -> !part.isBlank())
+    if (path.endsWith("/")) {
+      throw new InvalidOverlayUrlException(
+        "Overlay URL path is malformed - trailing slash"
+      );
+    }
+    var segments = path.split("/");
+    return Arrays.stream(segments)
+      .dropWhile(String::isBlank)
+      .map(it -> {
+        var trimmed = it.trim();
+        if (trimmed.isBlank()) {
+          throw new InvalidOverlayUrlException("Overlay URL path is malformed");
+        }
+        return trimmed;
+      })
       .toList();
   }
 }

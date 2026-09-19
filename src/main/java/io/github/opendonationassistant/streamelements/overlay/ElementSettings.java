@@ -12,7 +12,6 @@ final class ElementSettings {
   static final String FIXED_COORDINATES_CONTAINER =
     "fixed-coordinates-container";
   static final String ANIMATIONS = "animations";
-  static final String TIMED = "timed";
 
   private static final String DEFAULT_COLOR = "#FFFFFF";
   private static final String DEFAULT_BORDER_COLOR = "#000000";
@@ -92,20 +91,6 @@ final class ElementSettings {
 
   static Map<String, Object> animations(String in, String out) {
     var value = new LinkedHashMap<String, Object>();
-    value.put("inAnimation", animation(in, 1000));
-    value.put("outAnimation", animation(out, 1000));
-    return value;
-  }
-
-  static Map<String, Object> timed(
-    double shownDuration,
-    double hiddenDuration,
-    String in,
-    String out
-  ) {
-    var value = new LinkedHashMap<String, Object>();
-    value.put("shownDuration", OverlayGeometry.normalize(shownDuration));
-    value.put("hiddenDuration", OverlayGeometry.normalize(hiddenDuration));
     value.put("inAnimation", animation(in, 1000));
     value.put("outAnimation", animation(out, 1000));
     return value;

@@ -4,21 +4,14 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
 import io.github.opendonationassistant.events.MessageProcessor;
-import io.github.opendonationassistant.streamelements.repository.StreamElementsSessionRepository;
 import io.micronaut.rabbitmq.bind.RabbitAcknowledgement;
 import org.junit.jupiter.api.Test;
 
 // TODO add intgration test with MicronautTest
 class EventsListenerTest {
 
-  private final StreamElementsSessionRepository repository = mock(
-    StreamElementsSessionRepository.class
-  );
   private final MessageProcessor processor = mock(MessageProcessor.class);
-  private final EventsListener listener = new EventsListener(
-    repository,
-    processor
-  );
+  private final EventsListener listener = new EventsListener(processor);
 
   @Test
   void listen_shouldDelegateToMessageProcessor() throws Exception {

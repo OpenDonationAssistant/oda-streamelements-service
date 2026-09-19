@@ -8,7 +8,6 @@ import io.micronaut.scheduling.TaskExecutors;
 import jakarta.inject.Inject;
 import jakarta.inject.Named;
 import jakarta.inject.Singleton;
-import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
@@ -85,14 +84,12 @@ public class StreamElementsSessionRepository {
           .forEach(session::apply);
       })
       .exceptionally(error -> {
+        var cause = error.getCause() instanceof Exception exception
+          ? exception
+          : new RuntimeException(error);
         log.error(
-          "Failed to load widget configs",
-          Map.of(
-            "recipientId",
-            recipientId,
-            "error",
-            String.valueOf(error.getMessage())
-          )
+          "Failed to load widget configs for recipientId=" + recipientId,
+          cause
         );
         return null;
       });

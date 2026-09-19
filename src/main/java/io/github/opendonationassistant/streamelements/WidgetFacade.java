@@ -102,17 +102,5 @@ public class WidgetFacade {
         playedAsCommunityGift
       );
     }
-    public Payload withGifted(Boolean gifted) {
-      return new Payload(
-        name,
-        amount,
-        message,
-        gifted,
-        sender,
-        bulkGifted,
-        isCommunityGift,
-        playedAsCommunityGift
-      );
-    }
   }
 }
